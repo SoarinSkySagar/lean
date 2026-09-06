@@ -12,10 +12,10 @@ use axum::{
     body::Body,
     http::{Request, header::CONTENT_TYPE},
 };
+use containers::{Block, BlockBody, Checkpoint, MultiMessageAggregate, SignedBlock, Slot};
 use database::{
     BLOCKS_TABLE_NAME, Compression, Database, EnvironmentBuilder, GENESIS_STATE_TABLE_NAME,
 };
-use containers::{Block, BlockBody, Checkpoint, MultiMessageAggregate, SignedBlock, Slot};
 use fork_choice::store::Store;
 use http_api::{
     AggregatorController, HttpServerConfig, SharedSignedBlocks, SharedStore, normal_routes,

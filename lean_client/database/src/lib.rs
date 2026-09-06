@@ -383,7 +383,9 @@ mod tests {
     fn compression_roundtrips() {
         let data = vec![42u8; 1024];
         for compression in [Compression::None, Compression::Lz4, Compression::Zstd] {
-            let compressed = compression.compress(&data).expect("compress should succeed");
+            let compressed = compression
+                .compress(&data)
+                .expect("compress should succeed");
             let decompressed = compression
                 .decompress(&compressed)
                 .expect("decompress should succeed");
@@ -405,7 +407,8 @@ mod tests {
     fn put_then_get_roundtrips() {
         let db = blocks_db(test_env("put_get"));
         let block = sample_block(3, 7);
-        db.put(&block_key(3, 7), &block).expect("put should succeed");
+        db.put(&block_key(3, 7), &block)
+            .expect("put should succeed");
         let read = db
             .get(&block_key(3, 7))
             .expect("get should succeed")
@@ -417,7 +420,8 @@ mod tests {
     fn put_overwrites_existing_value() {
         let db = blocks_db(test_env("overwrite"));
         let key = block_key(1, 1);
-        db.put(&key, &sample_block(1, 1)).expect("put should succeed");
+        db.put(&key, &sample_block(1, 1))
+            .expect("put should succeed");
         let updated = sample_block(1, 9);
         db.put(&key, &updated).expect("second put should succeed");
         let read = db
@@ -431,8 +435,11 @@ mod tests {
     fn range_returns_blocks_in_slot_order() {
         let db = blocks_db(test_env("range_order"));
         for slot in [300u64, 0, 256, 255, 2] {
-            db.put(&block_key(slot, slot as u8), &sample_block(slot, slot as u8))
-                .expect("put should succeed");
+            db.put(
+                &block_key(slot, slot as u8),
+                &sample_block(slot, slot as u8),
+            )
+            .expect("put should succeed");
         }
         let slots: Vec<u64> = db
             .range::<BySlot>(..)
@@ -447,8 +454,11 @@ mod tests {
     fn range_respects_bounds() {
         let db = blocks_db(test_env("range_bounds"));
         for slot in 0..6u64 {
-            db.put(&block_key(slot, slot as u8), &sample_block(slot, slot as u8))
-                .expect("put should succeed");
+            db.put(
+                &block_key(slot, slot as u8),
+                &sample_block(slot, slot as u8),
+            )
+            .expect("put should succeed");
         }
 
         let slots = |blocks: Vec<Block>| blocks.iter().map(|b| b.slot.0).collect::<Vec<_>>();
@@ -472,9 +482,12 @@ mod tests {
     #[test]
     fn range_returns_all_forks_at_a_slot() {
         let db = blocks_db(test_env("range_forks"));
-        db.put(&block_key(4, 1), &sample_block(4, 1)).expect("put should succeed");
-        db.put(&block_key(4, 2), &sample_block(4, 2)).expect("put should succeed");
-        db.put(&block_key(5, 3), &sample_block(5, 3)).expect("put should succeed");
+        db.put(&block_key(4, 1), &sample_block(4, 1))
+            .expect("put should succeed");
+        db.put(&block_key(4, 2), &sample_block(4, 2))
+            .expect("put should succeed");
+        db.put(&block_key(5, 3), &sample_block(5, 3))
+            .expect("put should succeed");
 
         let at_slot_4 = db
             .range(BySlot(Slot(4))..=BySlot(Slot(4)))
@@ -487,8 +500,11 @@ mod tests {
     fn delete_range_removes_and_counts() {
         let db = blocks_db(test_env("delete_range"));
         for slot in 0..6u64 {
-            db.put(&block_key(slot, slot as u8), &sample_block(slot, slot as u8))
-                .expect("put should succeed");
+            db.put(
+                &block_key(slot, slot as u8),
+                &sample_block(slot, slot as u8),
+            )
+            .expect("put should succeed");
         }
 
         let deleted = db
@@ -568,7 +584,8 @@ mod tests {
                     .build()
                     .expect("first build should succeed"),
             );
-            db.put(&block_key(7, 7), &block).expect("put should succeed");
+            db.put(&block_key(7, 7), &block)
+                .expect("put should succeed");
         }
         let db = blocks_db(
             EnvironmentBuilder::new(path, 1)
